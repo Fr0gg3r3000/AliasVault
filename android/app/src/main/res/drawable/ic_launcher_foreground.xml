@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- A four-point sparkle, like the one in the app's title. -->
+    <path
+        android:fillColor="#FFC2D0"
+        android:pathData="M54,22 Q57,51 86,54 Q57,57 54,86 Q51,57 22,54 Q51,51 54,22 Z" />
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M82,24 Q83,31 90,32 Q83,33 82,40 Q81,33 74,32 Q81,31 82,24 Z" />
+</vector>
