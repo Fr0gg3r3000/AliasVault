@@ -1,0 +1,296 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline' https://cdnjs.cloudflare.com; style-src 'unsafe-inline'; img-src data: blob:; base-uri 'none'; form-action 'none'">
+<title>AliasVault</title>
+<style>
+:root{color-scheme:dark;font:14px Tahoma,Verdana,sans-serif;--b1:#680a1e;--b2:#0e0206;--glow:#ff6a8a;--dot:#8a1230}
+[hidden]{display:none!important}
+body{margin:0;color:#ffe9ee;display:grid;grid-template-columns:190px 1fr 290px;grid-template-rows:auto 1fr;gap:14px;padding:14px;height:calc(100vh - 28px);background:radial-gradient(circle at 30% 0%,var(--b1),var(--b2) 80%) fixed}
+body::before{content:"";position:fixed;inset:0;z-index:-2;background:radial-gradient(var(--dot) 1.8px,transparent 2.4px) 0 0/12px 12px;-webkit-mask-image:linear-gradient(#000,transparent 80%);mask-image:linear-gradient(#000,transparent 80%);animation:pan 30s linear infinite}
+@keyframes pan{to{background-position:12px 12px}}
+@keyframes tw{50%{opacity:.15}}
+#bgart{position:fixed;inset:0;width:100%;height:100%;z-index:-1;pointer-events:none;color:var(--glow);filter:drop-shadow(0 0 5px var(--glow))}
+#bgart .tw{animation:tw 3s ease-in-out infinite}
+@media(prefers-reduced-motion:reduce){body::before,#bgart .tw{animation:none}}
+@media(max-width:900px){body{display:block;height:auto}body>div{margin-bottom:12px}}
+header{grid-column:1/-1;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+h1,h2.logo{margin:0;font:italic 700 26px Georgia,serif;background:linear-gradient(#fff,#ffc2d0 45%,#ff2f5f 55%,#ffd0da);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 0 6px var(--glow))}
+body>div{background:#12020788;backdrop-filter:blur(6px);border:1px solid var(--glow);box-shadow:0 0 16px #0009 inset,0 0 14px #ff2f5f44;border-radius:14px;padding:12px;overflow:auto}
+#list div{padding:5px 8px;cursor:pointer;border-radius:6px}#list .sel{background:#ff2f5f55;box-shadow:0 0 8px var(--glow)}
+label{display:block;font-size:12px;margin-top:6px}
+input,textarea,select{width:100%;box-sizing:border-box;padding:5px;font:inherit;background:#fffffff0;color:#111;border:1px solid var(--glow);border-radius:8px}
+input[type=checkbox]{width:auto;margin-right:6px}
+input:focus,select:focus,textarea:focus{outline:2px solid var(--glow)}
+button{margin:3px 3px 0 0;padding:5px 12px;color:#fff;text-shadow:0 1px 2px #0008;border:1px solid #ffffffaa;border-radius:999px;background:linear-gradient(#ffb0c0,#e0244c 48%,#8a0a26 52%,#d01a40);box-shadow:0 0 8px var(--glow),inset 0 1px 0 #fffa;cursor:pointer}
+button:hover:not(:disabled){filter:brightness(1.2)}button.on{box-shadow:0 0 16px #fff,inset 0 1px 0 #fffa}
+button:disabled{opacity:.55;cursor:not-allowed}button.danger{background:linear-gradient(#aaa,#555 48%,#222 52%,#444)}
+.sw{width:26px;height:26px;padding:0}.row{display:flex;gap:6px;align-items:center}.row button{margin:0;padding:5px 8px}.row input{flex:1;min-width:0}
+#stage,#hd{border-radius:12px;border:1px solid var(--glow);box-shadow:0 0 14px #ff2f5f66;background:radial-gradient(circle at 50% 30%,#ffffff30,#0006);margin-bottom:8px}
+#hd{display:block;width:100%;image-rendering:pixelated}
+#av{width:100%;aspect-ratio:3/4;display:block;touch-action:none;cursor:grab}
+.m-simple .advonly,.m-adv .simpleonly{display:none!important}
+.m-simple #form label:not(.s){display:none}
+.small{font-size:12px;opacity:.78}.err{color:#ffb3c1;min-height:1.3em;margin:6px 0}
+dialog{background:#fff;color:#111;border-radius:10px;width:min(640px,92vw)}dialog textarea{height:150px}dialog h3{margin:0 0 8px}dialog hr{margin:14px 0}dialog input,dialog select,dialog textarea{margin-top:4px}
+#lock{position:fixed;inset:0;z-index:50;display:flex;align-items:center;justify-content:center;background:#0b0206d8;backdrop-filter:blur(10px)}
+#lockbox{width:min(390px,90vw);background:#120207f0;border:1px solid var(--glow);border-radius:16px;box-shadow:0 0 30px var(--glow);padding:20px}
+#toast{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);z-index:60;background:#000d;color:#fff;border:1px solid var(--glow);border-radius:999px;padding:6px 14px;font-size:13px}
+</style></head><body>
+<header><h1>✦ AliasVault ✦</h1><span><button id="m1">Simple</button><button id="m2">Advanced</button></span><span style="margin-left:auto"><button id="sec">🛡 Security</button><button id="lk">🔒 Lock now</button></span></header>
+<svg id="bgart" viewBox="0 0 1000 600" preserveAspectRatio="xMaxYMax slice" aria-hidden="true"><defs>
+<g id="fl"><ellipse cy="-13" rx="7" ry="13"/><ellipse cy="-13" rx="7" ry="13" transform="rotate(72)"/><ellipse cy="-13" rx="7" ry="13" transform="rotate(144)"/><ellipse cy="-13" rx="7" ry="13" transform="rotate(216)"/><ellipse cy="-13" rx="7" ry="13" transform="rotate(288)"/></g>
+<path id="sp" d="M0-14Q1.5-1.5 14 0Q1.5 1.5 0 14Q-1.5 1.5-14 0Q-1.5-1.5 0-14Z"/>
+<path id="st" d="M0-30L8.8-12 28.5-9.3 14.3 4.6 17.6 24.3 0 15-17.6 24.3-14.3 4.6-28.5-9.3-8.8-12Z" fill="none" stroke="currentColor" stroke-width="3"/></defs>
+<g fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round" opacity=".85"><path d="M-20 600C120 470 240 590 340 470S520 320 580 410 470 470 540 520 720 410 830 390 960 310 1020 230"/><path d="M340 470C300 420 350 370 390 400S390 470 355 455"/><path d="M830 390C800 330 860 300 880 340S850 390 835 370"/><path d="M700 600C760 520 880 540 940 470S1000 400 1030 380" stroke-width="3"/></g>
+<g fill="currentColor"><use href="#fl" transform="translate(230 90) scale(1.6) rotate(10)"/><use href="#fl" transform="translate(720 160) scale(1.2) rotate(40)"/><use href="#fl" transform="translate(870 230) scale(1.8) rotate(-20)"/><use href="#fl" transform="translate(120 470) scale(.9)"/></g>
+<use href="#st" transform="translate(560 90) scale(1.3) rotate(12)"/><use href="#st" transform="translate(60 250) scale(.8) rotate(-15)"/>
+<g fill="#fff"><use class="tw" href="#sp" transform="translate(300 120)"/><use class="tw" style="animation-delay:.8s" href="#sp" transform="translate(640 60) scale(.7)"/><use class="tw" style="animation-delay:1.5s" href="#sp" transform="translate(900 120) scale(1.2)"/><use class="tw" style="animation-delay:2.1s" href="#sp" transform="translate(470 330) scale(.8)"/><use class="tw" style="animation-delay:1.1s" href="#sp" transform="translate(950 480)"/></g></svg>
+<div><div id="list"></div><button id="new">New</button><button id="del">Delete</button></div>
+<div id="form"></div>
+<div><canvas id="hd" class="simpleonly" width="12" height="13"></canvas><div id="stage" class="advonly"><canvas id="av"></canvas></div>
+<button id="roll">Re-roll look</button><button id="spin" class="advonly">Auto-spin</button><button id="gen">Generate…</button><button id="exp">Export</button><button id="imp">Import</button>
+<label class="advonly">Background colour <input id="bgc" type="color" value="#d0143c" style="height:30px;padding:0"></label><div id="sws" class="advonly" style="margin-top:6px"></div>
+<p class="small">Everything is encrypted with your master passphrase and stored only in this browser. Nothing is sent anywhere.</p></div>
+<dialog id="dlg"><div id="dbody"></div><button id="close">Close</button></dialog>
+<section id="lock" hidden><div id="lockbox">
+<h2 class="logo">✦ AliasVault ✦</h2><p id="lockmsg" class="small"></p>
+<label>Passphrase<input id="lp1" type="password" autocomplete="off" spellcheck="false"></label>
+<label id="lp2w">Confirm passphrase<input id="lp2" type="password" autocomplete="off" spellcheck="false"></label>
+<p id="lpstr" class="small"></p><p id="lockerr" class="err" role="alert"></p>
+<button id="lgo" type="button">Unlock</button><button id="lerase" type="button" class="danger">Erase vault…</button>
+</div></section>
+<aside id="toast" hidden></aside>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+const SKN=["Very light","Light","Medium","Tan","Brown","Dark"],OSL=["Windows 11","Windows 10","macOS","Ubuntu Linux","Fedora Linux","Debian Linux","Arch Linux","ChromeOS","Other"],PHL=["iPhone 15","iPhone 13","Samsung Galaxy S23","Samsung Galaxy A54","Google Pixel 8","Xiaomi 13","OnePlus 11","Motorola Moto G","Fairphone 5","Other"],PANTS=["#222a44","#3a3a3a","#1f4a7a","#5a3a22","#6b2f4a"],SHOES=["#111111","#e8e8e8","#7a1f1f","#2b2b2b"];
+const F=[["alias_label","Alias label"],["first_name","First name"],["middle_names","Middle name(s)"],["last_name","Last name"],["gender","Gender","sel"],["dob","Date of birth (YYYY-MM-DD)"],["country_birth","Country of birth"],["country_residence","Country of residence"],["email","Email"],["password","Password","pw"],["phone","Phone number"],["os","Desktop OS",OSL],["phone_model","Mobile phone",PHL],["hair","Hair colour"],["eyes","Eye colour"],["skin","Skin colour",SKN],["accent","Accent"],["languages","Spoken languages (comma-separated)"],["hobbies","Hobbies (comma-separated)"],["certifications","Certifications (one per line)","ta"],["employment","Employment history (one per line)","ta"],["notes","Notes","ta"]];
+const $=id=>document.getElementById(id),enc=new TextEncoder(),dec=new TextDecoder();
+const CFG0={noPw:false,lockMin:5,domain:'example.com'},VK='avvault',ITER=600000,VAD=enc.encode('AliasVault vault v1');
+let db=[],cfg={},cur=null,vk=null,vsalt=null,viter=ITER,last=Date.now();
+
+/* ---------- helpers ---------- */
+const b2s=b=>{let s='';for(const x of b)s+=String.fromCharCode(x);return s};
+const tob64=b=>btoa(b2s(b)).replace(/\+/g,'-').replace(/\//g,'_');
+const fromb64=s=>Uint8Array.from(atob(s.replace(/-/g,'+').replace(/_/g,'/')),c=>c.charCodeAt(0));
+const crc=b=>{let c,t=[];for(let n=0;n<256;n++){c=n;for(let k=0;k<8;k++)c=c&1?0xEDB88320^(c>>>1):c>>>1;t[n]=c>>>0}let r=-1;for(const x of b)r=t[(r^x)&255]^(r>>>8);return((r^-1)>>>0).toString(16).padStart(8,'0')};
+const U=n=>{const lim=Math.floor(4294967296/n)*n;let x;do{x=crypto.getRandomValues(new Uint32Array(1))[0]}while(x>=lim);return x%n},Pk=l=>l[U(l.length)];
+const genpw=(n=18)=>{const s='abcdefghjkmnpqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ23456789!@#$%^&*-_=+?';return Array.from({length:n},()=>s[U(s.length)]).join('')};
+let toastT=null;const toast=m=>{const t=$('toast');t.textContent=m;t.hidden=false;clearTimeout(toastT);toastT=setTimeout(()=>t.hidden=true,3500)};
+const clean=a=>{const r={id:String(a.id).slice(0,64)};if(a.look)r.look=String(a.look).slice(0,64);F.forEach(([k])=>r[k]=String(a[k]||'').slice(0,5000));return r};
+
+/* ---------- export strings (compatible with the desktop app) ---------- */
+const pack=async(b)=>new Uint8Array(await new Response(new Blob([b]).stream().pipeThrough(new CompressionStream('deflate'))).arrayBuffer());
+async function inflate(b,max=5e6){let rd;try{rd=new Blob([b]).stream().pipeThrough(new DecompressionStream('deflate')).getReader();const parts=[];let n=0;for(;;){const{done,value}=await rd.read();if(done)break;n+=value.length;if(n>max){rd.cancel();throw'Export is unreasonably large; refusing to import.'}parts.push(value)}const o=new Uint8Array(n);let p=0;for(const x of parts){o.set(x,p);p+=x.length}return o}catch(e){throw typeof e=='string'?e:'The string is damaged (bad compression).'}}
+const AD=enc.encode('AV2');
+const pkey=async(pw,salt,it=ITER)=>crypto.subtle.deriveKey({name:'PBKDF2',salt,iterations:it,hash:'SHA-256'},await crypto.subtle.importKey('raw',enc.encode(pw),'PBKDF2',false,['deriveKey']),{name:'AES-GCM',length:256},false,['encrypt','decrypt']);
+async function encode(list,pw){
+  let d=await pack(enc.encode(JSON.stringify({v:1,aliases:list}))),p='AV1';
+  if(pw){const salt=crypto.getRandomValues(new Uint8Array(16)),iv=crypto.getRandomValues(new Uint8Array(12));
+    const ct=new Uint8Array(await crypto.subtle.encrypt({name:'AES-GCM',iv,additionalData:AD},await pkey(pw,salt),d));
+    d=new Uint8Array([...salt,...iv,...ct]);p='AV2'}
+  return `${p}-${tob64(d)}-${crc(d)}`}
+async function decode(t,pw){
+  const m=t.replace(/\s/g,'').match(/^(AV[12])-(.+)-([0-9a-f]{8})$/i);
+  if(!m)throw'Not an AliasVault string.';
+  let d;try{d=fromb64(m[2])}catch(e){throw'The string is damaged (bad encoding).'}
+  if(crc(d)!=m[3].toLowerCase())throw'Checksum mismatch - string damaged.';
+  if(m[1].toUpperCase()=='AV2'){if(!pw)throw'This export needs a password.';
+    try{d=new Uint8Array(await crypto.subtle.decrypt({name:'AES-GCM',iv:d.slice(16,28),additionalData:AD},await pkey(pw,d.slice(0,16)),d.slice(28)))}
+    catch(e){throw'Wrong password, or the string was altered.'}}
+  const o=JSON.parse(dec.decode(await inflate(d)));
+  return(o.aliases||[]).filter(a=>a&&a.id).slice(0,500).map(clean)}
+
+/* ---------- encrypted vault in localStorage ---------- */
+let saveP=Promise.resolve(),saveT=null;
+async function seal(){const iv=crypto.getRandomValues(new Uint8Array(12)),plain={aliases:db.map(a=>{const r={...a};if(cfg.noPw)delete r.password;return r}),cfg};
+  const ct=new Uint8Array(await crypto.subtle.encrypt({name:'AES-GCM',iv,additionalData:VAD},vk,enc.encode(JSON.stringify(plain))));
+  return JSON.stringify({v:1,kdf:'PBKDF2-SHA256',iter:viter,salt:tob64(vsalt),iv:tob64(iv),ct:tob64(ct)})}
+const save=()=>{if(!vk)return;clearTimeout(saveT);saveT=setTimeout(flush,300)};
+const flush=()=>{clearTimeout(saveT);saveT=null;saveP=saveP.then(async()=>{if(!vk)return;try{localStorage.setItem(VK,await seal())}catch(e){toast('Could not save: '+(e.message||e))}});return saveP};
+const hasVault=()=>{try{return!!localStorage.getItem(VK)}catch(e){return false}};
+let legacy=null;try{const t=localStorage.getItem('aliasvault');if(t){const a=JSON.parse(t);if(Array.isArray(a)&&a.length)legacy=a.filter(x=>x&&x.id)}}catch(e){}
+async function openRecord(pw){const r=JSON.parse(localStorage.getItem(VK));if(!(r.iter>=100000&&r.iter<=5e6))throw'The vault file looks damaged.';
+  const salt=fromb64(r.salt),k=await pkey(pw,salt,r.iter);let o;
+  try{o=JSON.parse(dec.decode(await crypto.subtle.decrypt({name:'AES-GCM',iv:fromb64(r.iv),additionalData:VAD},k,fromb64(r.ct))))}catch(e){throw'Wrong passphrase.'}
+  return{k,salt,iter:r.iter,o}}
+async function unlockVault(pw){const{k,salt,iter,o}=await openRecord(pw);vk=k;vsalt=salt;viter=iter;db=(o.aliases||[]).filter(a=>a&&a.id).map(a=>({...clean(a)}));cfg={...CFG0,...(o.cfg||{})}}
+async function createVault(pw){vsalt=crypto.getRandomValues(new Uint8Array(16));viter=ITER;vk=await pkey(pw,vsalt,viter);cfg={...CFG0};db=legacy?legacy.map(clean):[];
+  await flush();if(hasVault()){try{localStorage.removeItem('aliasvault')}catch(e){}legacy=null}else toast('Your browser blocked storage - nothing will be saved this session.')}
+async function changePass(oldp,newp){if(newp.length<10)throw'Use at least 10 characters.';try{await openRecord(oldp)}catch(e){throw'Current passphrase is wrong.'}
+  vsalt=crypto.getRandomValues(new Uint8Array(16));viter=ITER;vk=await pkey(newp,vsalt,viter);await flush()}
+function erase(){if(!confirm('Erase the vault and ALL aliases in this browser? This cannot be undone.'))return false;try{localStorage.removeItem(VK);localStorage.removeItem('aliasvault')}catch(e){}legacy=null;vk=null;db=[];cfg={};cur=null;return true}
+
+/* ---------- clipboard that cleans up after itself ---------- */
+let clipT=null,clipVal=null;
+async function copySecret(v){try{await navigator.clipboard.writeText(v)}catch(e){const t=document.createElement('textarea');t.value=v;document.body.append(t);t.select();document.execCommand('copy');t.remove()}
+  clipVal=v;clearTimeout(clipT);clipT=setTimeout(clearClip,30000);toast('Copied - the clipboard clears in 30 seconds')}
+async function clearClip(){clearTimeout(clipT);clipT=null;if(clipVal==null)return;const v=clipVal;clipVal=null;
+  try{if((await navigator.clipboard.readText())!==v)return}catch(e){}try{await navigator.clipboard.writeText('')}catch(e){}}
+
+/* ---------- avatar (same recipe as the desktop app) ---------- */
+const HAIR={"black":"#1b1b1b","dark brown":"#3b2417","light brown":"#8a5a33","brown":"#5a3a22","blond":"#e0c068","ginger":"#b5472a","red":"#a63a22","auburn":"#7a2e1c","salt":"#7d7d7d","grey":"#9a9a9a","gray":"#9a9a9a","silver":"#c4c4c4","white":"#ececec","blue":"#3a6fd8","pink":"#e86fb0","green":"#3fae5a","purple":"#8a4fd0"};
+const EYES={"dark brown":"#2b1a10","brown":"#5b3a1e","blue":"#3b82d6","green":"#3f9d5a","hazel":"#8a6b2f","grey":"#8b97a3","gray":"#8b97a3","amber":"#c98a1b","black":"#0d0d0d"};
+const SKINS=["#f6d5b8","#eebf97","#d9a273","#b97c52","#8d5a3a","#5e3b26"],BGS=["#cfe8ef","#e6d9f2","#d9efd3","#f7e3c4","#f2d0d0","#d0d8f2"],SHIRTS=["#2f5d8a","#8a2f4a","#2f8a5d","#c47a1e","#4a4a4a","#6b3fa0","#b5372f"];
+const STY={short:[[5,2,10,2],[4,3,11,3],[4,4,4,5],[11,4,11,5],[5,4,10,4]],buzz:[[5,2,10,2],[4,3,11,3]],bob:[[5,2,10,2],[4,3,11,3],[5,4,10,4],[3,3,3,8],[12,3,12,8],[4,4,4,7],[11,4,11,7]],long:[[5,2,10,2],[4,3,11,3],[5,4,10,4],[3,3,3,12],[12,3,12,12],[4,4,4,10],[11,4,11,10]],curly:[[4,1,11,1],[3,2,12,3],[3,4,3,6],[12,4,12,6],[5,4,10,4]],bald:[]};
+const col=(t,T,C)=>{t=(t||'').toLowerCase();for(const k of Object.keys(T).sort((a,b)=>b.length-a.length))if(t.includes(k))return T[k];return t.trim()?'#'+crc(enc.encode(t)).slice(0,6):C(Object.values(T))};
+const dark=h=>'#'+[1,3,5].map(i=>Math.floor(parseInt(h.slice(i,i+2),16)*.6).toString(16).padStart(2,'0')).join('');
+async function avatar(a){
+  const d=new Uint8Array(await crypto.subtle.digest('SHA-256',enc.encode(String(a.look||a.id||'x'))));let i=0;
+  const R=()=>d[i++%32]/256,C=l=>l[Math.floor(R()*l.length)];
+  const bg=C(BGS),shirt=C(SHIRTS),sk0=C(SKINS),sr=R(),br=R(),gr=R(),skin=SKINS[SKN.indexOf(a.skin)]||sk0;
+  const ht=(a.hair||'').toLowerCase(),hc=col(ht,HAIR,C),ec=col(a.eyes,EYES,C);
+  const g=(a.gender||'').trim().toLowerCase(),fem=g.startsWith('f')||g.includes('woman')||g.includes('girl');
+  const masc=(g.startsWith('m')||g.includes('man')||g.includes('boy'))&&!fem;
+  const pool=fem?['long','bob','short']:masc?['short','short','buzz','curly']:['short','bob','buzz','curly','long'];
+  let st=pool[Math.floor(sr*pool.length)];if(ht.includes('bald')||ht.includes('shaved'))st='bald';
+  const pants=C(PANTS),shoe=C(SHOES),G=Array.from({length:34},()=>Array(16).fill(bg)),P=(x0,y0,x1,y1,c)=>{for(let y=y0;y<=y1;y++)for(let x=x0;x<=x1;x++)G[y][x]=c};
+  P(0,0,15,33,bg);P(4,12,11,12,shirt);P(3,13,12,21,shirt);P(1,13,2,21,shirt);P(13,13,14,21,shirt);P(1,22,2,23,skin);P(13,22,14,23,skin);P(4,22,7,31,pants);P(8,22,11,31,pants);P(3,32,7,33,shoe);P(8,32,12,33,shoe);P(6,11,9,11,skin);P(4,4,11,9,skin);P(5,3,10,3,skin);P(5,10,10,10,skin);
+  STY[st].forEach(r=>P(...r,hc));if(masc&&br<.3)P(5,9,10,10,hc);
+  const brow=st=='bald'?'#555555':dark(hc);P(5,5,6,5,brow);P(9,5,10,5,brow);P(6,6,6,6,ec);P(9,6,9,6,ec);P(7,9,8,9,'#8a3b3b');
+  if(gr<.3){[[5,5,7,5],[8,5,10,5],[5,7,7,7],[8,7,10,7],[5,6,5,6],[7,6,8,6],[10,6,10,6]].forEach(r=>P(...r,'#222222'))}return{G,bg,hc,skin,bald:st=='bald'}}
+
+/* ---------- generator (smaller lists than the desktop app) ---------- */
+const CT={"United Kingdom":[["Oliver","George","Harry","Jack","Arthur"],["Olivia","Amelia","Isla","Grace","Poppy"],["Smith","Jones","Taylor","Brown","Evans","Walker"],"English",["Southern English","Northern English","Scottish","Welsh"]],
+"United States":[["James","Ethan","Logan","Mason","Owen"],["Emma","Harper","Ella","Chloe","Lily"],["Miller","Davis","Anderson","Moore","Jackson","Lewis"],"English",["General American","Southern American","New York","Midwestern"]],
+"Germany":[["Lukas","Jonas","Felix","Leon","Jan"],["Hannah","Lena","Mia","Anna","Clara"],["Müller","Schmidt","Schneider","Fischer","Weber","Becker"],"German",["Standard German","Bavarian","Berlin"]]};
+const HOB=["Hiking","Photography","Chess","Baking","Cycling","Gardening","Reading","Pottery","Climbing","Running","Painting","Cooking"],JOBS=["Administrator","Barista","Junior Analyst","Sales Assistant","Receptionist","IT Support Technician","Bookkeeper"],CA=["Harbour","Northgate","Bluebell","Ashford","Kestrel","Linden"],CB=["Logistics","Solutions","Foods","Digital","Supplies","Media"];
+function make(dom){
+  const ks=Object.keys(CT),born=Pk(ks),live=U(10)<6?born:Pk(ks),c=CT[born],g=Pk(['Male','Female','Male','Female','Non-binary']);
+  const pool=g=='Male'?c[0]:g=='Female'?c[1]:c[0].concat(c[1]),f=Pk(pool),l=Pk(c[2]);
+  const d=new Date(Date.now()-(21*365+U(44*365))*864e5),now=new Date().getFullYear(),slug=s=>s.normalize('NFKD').replace(/[^a-z0-9]/gi,'').toLowerCase();
+  const jobs=[];let s=d.getFullYear()+18+U(6);
+  for(let n=U(3);n>0&&s<now;n--){const e=Math.min(now,s+1+U(5));jobs.unshift(`${Pk(JOBS)}, ${Pk(CA)} ${Pk(CB)} Ltd (${s}-${e==now?'present':e})`);s=e}
+  const ph=live=='United Kingdom'?`+44 7700 900${100+U(900)}`:live=='United States'?`+1 202-555-01${String(U(100)).padStart(2,'0')}`:'';
+  return{first_name:f,middle_names:U(3)?'':Pk(pool),last_name:l,gender:g,dob:d.toISOString().slice(0,10),country_birth:born,country_residence:live,
+    email:`${slug(f)}.${slug(l)}${10+U(90)}@${dom}`,phone:ph,password:genpw(),os:Pk(OSL),phone_model:Pk(PHL),skin:Pk(SKN),hair:Pk(["Black","Dark brown","Brown","Light brown","Blonde","Ginger","Grey"]),eyes:Pk(['Brown','Blue','Green','Hazel','Grey']),
+    accent:Pk(c[4]),languages:[c[3],...(U(2)?[Pk(['Spanish','French','Italian','Polish'])]:[])].join(', '),hobbies:[...new Set([Pk(HOB),Pk(HOB),Pk(HOB)])].join(', '),
+    certifications:U(2)?Pk(['First Aid at Work','Food Hygiene Level 2','CompTIA A+','PRINCE2 Foundation']):'',employment:jobs.join('\n')}}
+
+/* ---------- UI ---------- */
+const S=new Set(['first_name','last_name','country_residence','email','password']);
+$('form').innerHTML=F.map(([k,l,t])=>`<label${S.has(k)?' class="s"':''}>${l}${Array.isArray(t)?`<select id="f_${k}"><option value="">—</option>${t.map(o=>`<option>${o}</option>`).join('')}</select>`:k=='password'?`<span class="row"><input id="f_password" type="password" autocomplete="off" spellcheck="false"><button type="button" id="pwshow" title="Show / hide">👁</button><button type="button" id="pwcopy" title="Copy (clipboard clears after 30s)">📋</button><button type="button" id="pwgen" title="Generate a random password">🎲</button></span>`:t=='ta'?`<textarea id="f_${k}" rows="3"></textarea>`:t=='sel'?`<input id="f_${k}" list="gl"><datalist id="gl"><option>Male<option>Female<option>Non-binary</datalist>`:`<input id="f_${k}">`}</label>`).join('');
+const nm=a=>a.alias_label||[a.first_name,a.last_name].filter(Boolean).join(' ')||'(unnamed)';
+let revT=null;
+function reveal(on){const i=$('f_password');i.type=on?'text':'password';$('pwshow').textContent=on?'🙈':'👁';clearTimeout(revT);if(on)revT=setTimeout(()=>reveal(false),15000)}
+const renderList=()=>{$('list').innerHTML='';db.forEach(a=>{const d=document.createElement('div');d.textContent=nm(a);d.className=a===cur?'sel':'';d.onclick=()=>{cur=a;load()};$('list').append(d)})};
+const load=()=>{F.forEach(([k])=>$('f_'+k).value=cur[k]||'');reveal(false);renderList();draw()};
+const add=()=>{cur={id:crypto.randomUUID().replace(/-/g,'')};db.push(cur);save();load()};
+$('form').oninput=()=>{if(!cur)return;F.forEach(([k])=>{const v=$('f_'+k).value;cur[k]=k=='password'?v:v.trim()});save();renderList();draw()};
+$('pwshow').onclick=()=>reveal($('f_password').type=='password');
+$('pwcopy').onclick=()=>{const v=$('f_password').value;v?copySecret(v):toast('No password to copy')};
+$('pwgen').onclick=()=>{$('f_password').value=genpw();$('form').oninput();reveal(true)};
+$('new').onclick=add;
+$('del').onclick=()=>{if(confirm('Delete this alias?')){db=db.filter(a=>a!==cur);save();db.length?(cur=db[0],load()):add()}};
+$('roll').onclick=()=>{cur.look=crypto.randomUUID();save();draw()};
+$('gen').onclick=()=>{const dom=prompt('Email domain for the generated address (use your alias/forwarding service):',cfg.domain||'example.com');if(!dom)return;
+  cfg.domain=dom.trim();Object.assign(cur,make(cfg.domain));save();load();reveal(true)};
+const show=h=>{$('dbody').innerHTML=h;$('dlg').showModal()};
+$('close').onclick=()=>$('dlg').close();
+$('dlg').addEventListener('close',()=>{$('dbody').innerHTML=''});
+$('exp').onclick=()=>{
+  show(`<h3>Export</h3><p class="small">Creates a text string you can paste anywhere and import on another device. An export password encrypts it (AES-256-GCM).</p>
+<label><input id="all" type="checkbox">Export all aliases (otherwise just this one)</label>
+<label><input id="incpw" type="checkbox">Include passwords (needs an export password)</label>
+<input id="pw" type="password" autocomplete="off" placeholder="Export password (recommended)">
+<textarea id="out" readonly></textarea><button id="mk">Create string</button><button id="cp">Copy</button><button id="qr">QR code</button><div id="qrbox"></div>`);
+  $('mk').onclick=async()=>{const pw=$('pw').value,inc=$('incpw').checked;
+    if(inc&&!pw)return alert('Set an export password to include passwords - otherwise they would be readable in the string.');
+    if(!pw&&!confirm('No export password: anyone who sees this string can read it. Continue?'))return;
+    $('out').value='Working…';
+    try{$('out').value=await encode(($('all').checked?db:[cur]).map(a=>{const r={...a};if(!inc)delete r.password;return r}),pw)}catch(e){$('out').value='';alert(e.message||e)}};
+  $('cp').onclick=()=>navigator.clipboard.writeText($('out').value).catch(()=>{$('out').select();document.execCommand('copy')});
+  $('qr').onclick=()=>{try{const q=qrcode(0,'L');q.addData($('out').value.trim());q.make();const n=q.getModuleCount(),s=Math.floor(480/(n+8)),cv=document.createElement('canvas');cv.width=cv.height=(n+8)*s;const x=cv.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,cv.width,cv.height);x.fillStyle='#000';for(let r=0;r<n;r++)for(let k=0;k<n;k++)if(q.isDark(r,k))x.fillRect((k+4)*s,(r+4)*s,s,s);$('qrbox').replaceChildren(cv)}catch(e){alert('QR failed: too much data, or the QR library could not load (offline?).')}}};
+$('imp').onclick=()=>{
+  show(`<h3>Import</h3><p class="small">Paste an AliasVault string.</p><textarea id="inp"></textarea><input id="pw2" type="password" autocomplete="off" placeholder="Export password (if it was encrypted)"><br><button id="go">Import</button>`);
+  $('go').onclick=async()=>{try{const L=await decode($('inp').value,$('pw2').value);
+    L.forEach(a=>{const i=db.findIndex(x=>x.id==a.id);if(i<0)db.push(a);else{if(!a.password)a.password=db[i].password||'';db[i]=a}});
+    cur=db.find(x=>x.id==(cur&&cur.id))||db[0];if(!cur)return add();save();load();$('dlg').close();toast(`Imported ${L.length} alias(es)`)}catch(e){alert(e.message||e)}}};
+
+/* ---------- theme + 3D ---------- */
+const hx=h=>[1,3,5].map(i=>parseInt(h.slice(i,i+2),16)),mix=(h,t,f)=>'#'+hx(h).map(v=>Math.round(v+(t-v)*f).toString(16).padStart(2,'0')).join('');
+function theme(h){const s=document.documentElement.style;s.setProperty('--b1',mix(h,0,.5));s.setProperty('--b2',mix(h,0,.93));s.setProperty('--glow',mix(h,255,.3));s.setProperty('--dot',mix(h,0,.35));$('bgc').value=h;try{localStorage.setItem('avbg',h)}catch(e){}}
+$('bgc').oninput=e=>theme(e.target.value);
+$('sws').innerHTML=['#d0143c','#e0409a','#7a3ae0','#2a8fe0','#27c4a4','#e0a020'].map(c=>`<button class="sw" data-c="${c}" style="background:${c}" title="${c}"></button>`).join('');
+$('sws').onclick=e=>e.target.dataset.c&&theme(e.target.dataset.c);
+let bg0='#d0143c';try{bg0=localStorage.getItem('avbg')||bg0}catch(e){}theme(bg0);
+let ren,sc,cam,grp,spin=true,ry=.5,rx=.15,drag=null,tok=0;
+if(window.THREE){
+  const cv=$('av');ren=new THREE.WebGLRenderer({canvas:cv,alpha:true,antialias:true});sc=new THREE.Scene();cam=new THREE.PerspectiveCamera(32,.75,.1,200);cam.position.set(0,0,75);
+  sc.add(new THREE.AmbientLight(0xffffff,.7));const dl=new THREE.DirectionalLight(0xffffff,.8);dl.position.set(8,14,20);sc.add(dl);
+  grp=new THREE.Group();sc.add(grp);
+  cv.onpointerdown=e=>{drag=[e.clientX,e.clientY];cv.setPointerCapture(e.pointerId)};
+  cv.onpointermove=e=>{if(!drag)return;ry+=(e.clientX-drag[0])*.01;rx=Math.max(-1.2,Math.min(1.2,rx+(e.clientY-drag[1])*.01));drag=[e.clientX,e.clientY]};
+  cv.onpointerup=cv.onpointercancel=()=>drag=null;
+  cv.onwheel=e=>{e.preventDefault();cam.position.z=Math.max(40,Math.min(130,cam.position.z+e.deltaY*.03))};
+  (function loop(){const w=cv.clientWidth;if(w&&cv.width!=Math.floor(w*devicePixelRatio)){ren.setPixelRatio(devicePixelRatio);ren.setSize(w,Math.round(w*4/3),false)}
+    if(spin&&!drag)ry+=.01;grp.rotation.set(rx,ry,0);ren.render(sc,cam);requestAnimationFrame(loop)})();
+}else $('stage').insertAdjacentHTML('beforeend','<p style="padding:8px">3D view needs the three.js script from cdnjs - are you offline?</p>');
+$('spin').onclick=()=>spin=!spin;
+const clearMesh=()=>{if(grp)grp.children.slice().forEach(o=>{grp.remove(o);o.geometry.dispose();o.material.dispose()})};
+const head=m=>{const c=$('hd').getContext('2d');for(let y=0;y<13;y++)for(let x=0;x<12;x++){c.fillStyle=m.G[y][x+2];c.fillRect(x,y,1,1)}};
+const draw=async()=>{if(!cur)return;const t=++tok,m=await avatar(cur);if(t!=tok||!cur)return;head(m);if(!grp)return;
+  clearMesh();
+  const cells=[];m.G.forEach((row,y)=>row.forEach((c,x)=>{if(c==m.bg)return;for(let z=0;z<(y<=10?6:x<3||x>12?3:4);z++)cells.push([x,y,z,z>=2&&y<=10?(m.bald?m.skin:m.hc):c])}));
+  const mesh=new THREE.InstancedMesh(new THREE.BoxGeometry(1,1,1),new THREE.MeshLambertMaterial(),cells.length),o=new THREE.Object3D();
+  cells.forEach(([x,y,z,c],i)=>{o.position.set(x-7.5,16.5-y,3-z);o.updateMatrix();mesh.setMatrixAt(i,o.matrix);mesh.setColorAt(i,new THREE.Color(c))});
+  mesh.instanceMatrix.needsUpdate=true;mesh.instanceColor.needsUpdate=true;grp.add(mesh)};
+const setMode=m=>{document.body.className='m-'+m;$('m1').classList.toggle('on',m=='simple');$('m2').classList.toggle('on',m=='adv');try{localStorage.setItem('avmode',m)}catch(e){}};
+$('m1').onclick=()=>setMode('simple');$('m2').onclick=()=>setMode('adv');
+let md='simple';try{md=localStorage.getItem('avmode')||md}catch(e){}setMode(md);
+
+/* ---------- lock screen, auto-lock, security settings ---------- */
+let lmode='unlock',fails=0,coolT=null,busy=false,locking=false;
+const strength=p=>p.length<10?'Too short - use at least 10 characters.':p.length<14?'OK - longer is better.':p.length<20?'Good.':'Strong.';
+const lerr=m=>$('lockerr').textContent=m||'';
+const inertAll=v=>document.querySelectorAll('body>div,body>header').forEach(e=>e.inert=v);
+function showLock(msg){
+  inertAll(true);lmode=hasVault()?'unlock':'create';
+  $('lp1').value=$('lp2').value='';lerr('');$('lpstr').textContent='';
+  $('lp2w').hidden=lmode!='create';$('lerase').hidden=lmode!='unlock';
+  $('lgo').textContent=lmode=='create'?'Create vault':'Unlock';$('lgo').disabled=!!coolT;
+  $('lockmsg').textContent=msg||(lmode=='unlock'?'Enter your passphrase to unlock.':legacy?'Found unencrypted aliases from an earlier version. Choose a passphrase to encrypt them.':'Choose a master passphrase. It encrypts everything stored in this browser. There is no recovery: if you forget it, the data is gone. Four or five random words make a good passphrase.');
+  $('lock').hidden=false;$('lp1').focus()}
+function cooldown(s){$('lgo').disabled=true;let n=s;const tick=()=>{if(n<=0){coolT=null;$('lgo').disabled=false;$('lgo').textContent='Unlock';return}$('lgo').textContent=`Try again in ${n}s`;n--;coolT=setTimeout(tick,1000)};tick()}
+async function submitLock(){
+  if(busy||coolT)return;const p=$('lp1').value;lerr('');
+  if(!crypto.subtle)return lerr('This browser cannot encrypt here. Open the file locally or over https.');
+  busy=true;$('lgo').disabled=true;$('lgo').textContent='Working…';
+  try{
+    if(lmode=='create'){if(p.length<10)throw'Use at least 10 characters.';if(p!==$('lp2').value)throw'The two passphrases do not match.';await createVault(p)}
+    else{if(!p)throw'Enter your passphrase.';await unlockVault(p)}
+    fails=0;startSession();
+  }catch(e){vk=null;if(lmode=='unlock'){fails++;cooldown(Math.min(2**(fails-1),30))}lerr(e.message||String(e))}
+  finally{busy=false;if(!coolT){$('lgo').disabled=false;$('lgo').textContent=lmode=='create'?'Create vault':'Unlock'}}}
+function startSession(){last=Date.now();$('lp1').value=$('lp2').value='';$('lock').hidden=true;inertAll(false);db.length?(cur=db[0],load()):add()}
+async function lock(msg){
+  if(!vk||locking)return;locking=true;
+  try{if($('dlg').open)$('dlg').close();await flush();await clearClip()}catch(e){}
+  vk=null;vsalt=null;db=[];cfg={};cur=null;tok++;
+  F.forEach(([k])=>$('f_'+k).value='');reveal(false);$('list').innerHTML='';$('dbody').innerHTML='';
+  $('hd').getContext('2d').clearRect(0,0,12,13);clearMesh();
+  locking=false;showLock(msg)}
+$('lgo').onclick=submitLock;
+['lp1','lp2'].forEach(i=>$(i).addEventListener('keydown',e=>{if(e.key=='Enter')submitLock()}));
+$('lp1').addEventListener('input',()=>{if(lmode=='create')$('lpstr').textContent=strength($('lp1').value)});
+$('lerase').onclick=()=>{if(erase())showLock('Vault erased. Choose a new passphrase to start again.')};
+$('lk').onclick=()=>lock('Locked.');
+['pointerdown','pointermove','keydown','wheel','touchstart'].forEach(t=>addEventListener(t,()=>{last=Date.now()},{passive:true,capture:true}));
+const idle=()=>{if(vk&&Date.now()-last>(cfg.lockMin||5)*60000)lock(`Locked after ${cfg.lockMin||5} minutes of inactivity.`)};
+setInterval(idle,5000);document.addEventListener('visibilitychange',()=>{if(!document.hidden)idle()});
+$('sec').onclick=()=>{
+  show(`<h3>Security</h3>
+<label>Lock automatically after <select id="sl">${[1,5,15,30].map(n=>`<option value="${n}"${n==cfg.lockMin?' selected':''}>${n} minute${n>1?'s':''}</option>`).join('')}</select> of inactivity</label>
+<label><input id="snp" type="checkbox"${cfg.noPw?' checked':''}>Don't save passwords (they stay in memory only and are gone once the vault locks)</label>
+<hr><b>Change passphrase</b>
+<input id="cp0" type="password" autocomplete="off" placeholder="Current passphrase"><input id="cp1" type="password" autocomplete="off" placeholder="New passphrase (10+ characters)"><input id="cp2" type="password" autocomplete="off" placeholder="Repeat new passphrase"><br><button id="cpgo">Change passphrase</button>
+<hr><button id="erall" class="danger">Erase all data…</button>
+<p class="small">What this protects: the saved vault is encrypted (AES-256-GCM, key from PBKDF2 with 600,000 rounds), so someone who copies your browser profile cannot read it without the passphrase. What it can't: malware or a keylogger on your device, or someone using the page while it is unlocked. A forgotten passphrase cannot be recovered.</p>`);
+  $('sl').onchange=()=>{cfg.lockMin=+$('sl').value;save()};
+  $('snp').onchange=()=>{cfg.noPw=$('snp').checked;save();toast(cfg.noPw?'Passwords will no longer be saved to disk':'Passwords will be saved (encrypted) again')};
+  $('cpgo').onclick=async()=>{try{if($('cp1').value!==$('cp2').value)throw'The new passphrases do not match.';await changePass($('cp0').value,$('cp1').value);$('dlg').close();toast('Passphrase changed')}catch(e){alert(e.message||e)}};
+  $('erall').onclick=()=>{if(erase()){$('dlg').close();lockAfterErase()}}};
+function lockAfterErase(){F.forEach(([k])=>$('f_'+k).value='');$('list').innerHTML='';clearMesh();showLock('Vault erased. Choose a new passphrase to start again.')}
+
+showLock();
+</script></body></html>
