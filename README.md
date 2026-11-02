@@ -47,37 +47,6 @@ Generated phone numbers use ranges reserved for fiction (UK Ofcom drama numbers,
 reserved numbers) so they never ring a real person. Aliases are for privacy, pseudonymity, testing and fiction —
 not for impersonating real people or for official documents and identity checks.
 
-## Building it yourself
 
-**Desktop:** `python build.py` (needs Python 3.8+ with Tkinter) → `dist/AliasVault`.
-
-**Android:**
-```
-python3 android/prepare_assets.py --download     # bundles the web page + two libraries
-gradle -p android assembleRelease                # needs JDK 17 and the Android SDK
-```
-The two bundled libraries (three.js r128 and qrcode-generator 1.4.4, both MIT) are fetched once into `vendor/`.
-To pin them, run `sha256sum vendor/*.js > vendor/SHA256SUMS` and commit that file — builds then refuse any file
-that doesn't match.
-
-## Publishing a release (maintainer notes)
-
-1. **Make a signing key once** and keep a backup somewhere safe — if it's lost, existing users can't update:
-   ```
-   keytool -genkeypair -v -keystore aliasvault-release.jks -alias aliasvault \
-           -keyalg RSA -keysize 4096 -validity 36500
-   base64 -w0 aliasvault-release.jks        # on macOS: base64 -i aliasvault-release.jks
-   ```
-   Use the same password for the store and the key.
-2. In the repo go to **Settings → Secrets and variables → Actions** and add:
-   `ANDROID_KEYSTORE_BASE64` (the base64 text), `ANDROID_KEYSTORE_PASSWORD`, `ANDROID_KEY_ALIAS` (`aliasvault`),
-   `ANDROID_KEY_PASSWORD`.
-3. Create a release with a new tag such as `v1.0.0` (**Releases → Draft a new release**), or run
-   `git tag v1.0.0 && git push --tags`. The *Release* workflow builds the signed APK plus the desktop programs and
-   attaches them.
-
-Never commit the `.jks` file.
-
-## Licence
 
 MIT — see [LICENSE](LICENSE). Bundled libraries keep their own MIT licences (see `THIRD_PARTY.txt` inside the app).
